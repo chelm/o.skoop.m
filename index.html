@@ -9,7 +9,7 @@
   
 </head>
 <body onload="init()">
-  <div id="col-left" class="col-md-4">
+  <div id="col-left" class="col-md-4 col-sm-4">
     <h1>o.skoop.m</h1>
     <h5>A Simple UI for Fine Grained Access to OSM</h5>
     <form role="form" id="form-main">
@@ -20,8 +20,11 @@
       </div>
       <button type="submit" class="btn btn-default" id="search-submit">Submit</button>
     </form>
+    <div class="col-md-2 col-sm-2"></div>
+      <button id="download" class="btn btn-success col-md-8 col-sm-8" disabled="disabled">Download</button>
+    <div class="col-md-2 col-sm-2"></div>
   </div>
-  <div id="map" class="col-md-8">
+  <div id="map" class="col-md-8 col-sm-8">
   </div>
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script src="http://d3js.org/d3.geo.projection.v0.min.js"></script>
