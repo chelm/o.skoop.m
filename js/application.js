@@ -36,6 +36,7 @@ App.prototype.initMap = function() {
 
   this.g = this.svg.append("g");
 
+  //Add states, and set default style on map load 
   d3.json("data/us.json", function(error, us) {
     console.log('us', us);
     self.g.append("g")
@@ -43,6 +44,7 @@ App.prototype.initMap = function() {
       .selectAll("path")
         .data(topojson.feature(us, us.objects.us).features)
       .enter().append("path")
+        .attr('class', 'state')
         .attr("d", self.path)
         .on("click", function(d) {
           self._mapClicked(d)
@@ -52,8 +54,12 @@ App.prototype.initMap = function() {
         .datum(topojson.mesh(us, us.objects.us, function(a, b) { return a !== b; }))
         .attr("id", "state-borders")
         .attr("d", self.path);
+
+    self._totalCountByState();
+
   });
 
+  //Add counties, but keep them hidden by default
   d3.json("data/us-counties.json", function(error, us) {
     
     self.g.append("g")
@@ -67,6 +73,13 @@ App.prototype.initMap = function() {
 
 };
 
+
+/*
+* Handle map zoom and animation
+* Fire "Show Counties"
+* TODO: logic for zipcodes
+*
+*/
 App.prototype._mapClicked = function(d) {
   var self = this;
 
@@ -97,6 +110,13 @@ App.prototype._mapClicked = function(d) {
       });
 }
 
+
+
+/*
+* On state select, show counties within state
+*
+*
+*/
 App.prototype._showCounties = function(state) {
   var self = this;
 
@@ -113,4 +133,51 @@ App.prototype._showCounties = function(state) {
       }
     });
   
+}
+
+
+
+/*
+* Default map style
+* Total count by state
+*
+*/
+App.prototype._totalCountByState = function() {
+  var self = this;
+  var quantize = d3.scale.quantize()
+    .domain([0, 0])
+    .range(d3.range(9).map(function(i) { return "q" + i + "-9"; }));
+
+  this.kooposm.stateCounts('points',{},function(err, data){ 
+    
+    //need to know domain 
+    var min = null, max = null;
+    data.forEach(function(st,i) {
+      if ( !max || st.count >= max ) max = st.count;
+      if ( !min || st.count <= min ) min = st.count;
+      quantize.domain([min, max]);
+    });
+
+    d3.selectAll('.state')
+      .attr('class', function(d) {
+        var count = 0;
+        
+        data.forEach(function(st,i) {
+          if ( d.properties.NAME10 === st.state ) {
+            count = st.count;
+          }
+        });
+
+        //for now not all states have count, but we still want to color them
+        if ( count === 0 ) {
+          return "state"
+        } else {
+          return quantize( count );
+        }
+        
+      });
+
+    console.log('TOTAL COUNT DOMAIN: ', quantize.domain());
+  });
+
 }
