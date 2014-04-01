@@ -2,42 +2,27 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Adaptive Composite Map Projection (Lite)</title>
-  <style>
-  body {
-    background: #fcfcfa;
-    height: 100%;
-    position: relative;
-    width: 100%;
-    margin:auto;
-  }
-  .stroke {
-    fill: none;
-    stroke: #000;
-    stroke-width: 3px;
-  }
-  .fill {
-    fill: #999;
-  }
-  .graticule {
-    fill: none;
-    stroke: #fff;
-    stroke-width: .5px;
-    stroke-opacity: .5;
-  }
-  .land {
-    fill: #fff;
-    stroke:#777;
-    stroke-width:.75px;
-  }
-  .boundary {
-    fill: none;
-    stroke: #fff;
-    stroke-width: .5px;
-  }
-  </style>
+  <title>O.SKoop.M</title>
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/main.css" rel="stylesheet">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Lato:100,300,400,700"></link>
+  
 </head>
 <body onload="init()">
+  <div id="col-left" class="col-md-4">
+    <h1>o.skoop.m</h1>
+    <h5>A Simple UI for Fine Grained Access to OSM</h5>
+    <form role="form" id="form-main">
+      <div class="form-group">
+        <select type="" class="form-control" id="data-type-select">
+          <option id="select-data-type">Select Data Type</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-default" id="search-submit">Submit</button>
+    </form>
+  </div>
+  <div id="map" class="col-md-8">
+  </div>
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script src="http://d3js.org/d3.geo.projection.v0.min.js"></script>
   <script src="js/d3.acmp.js"></script>

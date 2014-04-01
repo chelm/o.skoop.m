@@ -1,0 +1,49 @@
+body {
+    background: #fcfcfa;
+    margin:0;
+    padding:0;
+    font: 17px/28px Georgia;
+    font-family: Lato, 'Helvetica Neue';
+    -webkit-font-smoothing: antialiased;
+  }
+  .stroke {
+    fill: none;
+    stroke: #000;
+    stroke-width: 3px;
+  }
+  .fill {
+    fill: #999;
+  }
+  .graticule {
+    fill: none;
+    stroke: #fff;
+    stroke-width: .5px;
+    stroke-opacity: .5;
+  }
+  .land {
+    fill: #fff;
+    stroke:#777;
+    stroke-width:.75px;
+  }
+  .boundary {
+    fill: none;
+    stroke: #fff;
+    stroke-width: .5px;
+  }
+
+
+/* FORM */
+#col-left h1, #col-left h5{
+  text-align:center;
+}
+
+#form-main {
+  margin-top:50px;
+}
+
+
+
+/* MAP */
+#map {
+  height:100%;
+}

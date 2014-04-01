@@ -1,7 +1,11 @@
 (function() {
   d3.geo.acmp = function() {
 
-    var pick = function(scale, coords) {
+    var pick = function(scale, coords, width, height) {
+      
+      var proj,
+        currentProj;
+
       if (scale <= 1.5) {
         d3.select("#proj").text("Hammer");
         currentProj = "hammer";
