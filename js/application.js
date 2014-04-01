@@ -3,6 +3,8 @@ var App = function(){
 
   this.width = document.getElementById("map").clientWidth;
   this.height = window.screen.height / 1.8;
+
+  this.kooposm = KoopOSM('http://koop.dc.esri.com', d3);
   
   this.initMap();
 

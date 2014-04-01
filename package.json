@@ -17,5 +17,8 @@
     "grunt": "0.4.x",
     "grunt-contrib-jshint": "0.3.x",
     "grunt-vows": "0.4.x"
+  },
+  "dependencies": {
+    "d3": "~3.4.4"
   }
 }
