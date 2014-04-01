@@ -1,0 +1,21 @@
+{
+  "name": "o.skoop.m",
+  "version": "0.0.1",
+  "description": "a ui for accessing osm data via koop",
+  "main": "index.js",
+  "scripts": {
+    "test": "vows --spec"
+  },
+  "keywords": [
+    "koop"
+  ],
+  "author": "Chris Helm",
+  "license": "BSD-2-Clause",
+  "repository": "https://github.com/chelm/o.skoop.m.git",
+  "devDependencies": {
+    "vows": "~0.7.0",
+    "grunt": "0.4.x",
+    "grunt-contrib-jshint": "0.3.x",
+    "grunt-vows": "0.4.x"
+  }
+}
