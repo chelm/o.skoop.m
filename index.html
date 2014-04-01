@@ -6,9 +6,9 @@
   <style>
   body {
     background: #fcfcfa;
-    height: 800px;
+    height: 100%;
     position: relative;
-    width: 1160px;
+    width: 100%;
     margin:auto;
   }
   .stroke {
@@ -40,12 +40,12 @@
 <body>
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script src="http://d3js.org/d3.geo.projection.v0.min.js"></script>
-  <script src="d3.acmp.js"></script>
+  <script src="js/d3.acmp.js"></script>
   <script src="http://d3js.org/topojson.v1.min.js"></script>
   <script type="text/javascript">
 
-  var width = 1160,
-      height = 800,
+  var width = window.width,
+      height = window.height,
       scale = 1,
       currentProj;
 
