@@ -59,7 +59,12 @@ body, html {
   pointer-events: none;
 }
 
+.county-hidden {
+  display: none;
+}
+
 .county {
+  display: block;
   fill: none;
   stroke: #fff;
   stroke-width: 0.5px;

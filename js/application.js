@@ -52,12 +52,21 @@ App.prototype.initMap = function() {
         .attr("d", self.path);
   });
 
+  d3.json("data/us-counties.json", function(error, us) {
+    
+    self.g.append("g")
+      .attr("id", "counties")
+    .selectAll("path")
+      .data(topojson.feature(us, us.objects.UScounties).features)
+    .enter().append("path")
+      .attr('class', 'county-hidden')
+      .attr("d", self.path)
+  });
+
 };
 
 App.prototype._mapClicked = function(d) {
   var self = this;
-
-  d3.selectAll('#counties').remove();
 
   var x, y, k;
 
@@ -67,7 +76,6 @@ App.prototype._mapClicked = function(d) {
     y = centroid[1];
     k = 4;
     this.centered = d;
-    self._showCounties(d);
   } else {
     x = self.width / 2;
     y = self.height / 2;
@@ -81,26 +89,26 @@ App.prototype._mapClicked = function(d) {
   self.g.transition()
       .duration(750)
       .attr("transform", "translate(" + self.width / 2 + "," + self.height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
-      .style("stroke-width", 1.5 / k + "px");
+      .style("stroke-width", 1.5 / k + "px")
+      .each("end", function() {
+        self._showCounties(d);
+      });
 }
 
 App.prototype._showCounties = function(state) {
   var self = this;
 
-  d3.json("data/us-counties.json", function(error, us) {
-    
-    self.g.append("g")
-      .attr("id", "counties")
-    .selectAll("path")
-      .data(topojson.feature(us, us.objects.UScounties).features)
-    .enter().append("path")
-      .attr('class', function(d) {
-        if (state.properties.NAME10 === d.properties.STATE_NAME) {
-          return "county";
-        } else {
-          return "no-county";
-        }
-      })
-      .attr("d", self.path)
-  });
+  
+  d3.selectAll('.county')
+    .attr('class', 'county-hidden');
+  
+  d3.selectAll('.county-hidden')
+    .attr('class', function(d) {
+      if (state.properties.NAME10 === d.properties.STATE_NAME) {
+        return "county";
+      } else {
+        return "county-hidden";
+      }
+    });
+  
 }
