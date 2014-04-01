@@ -37,105 +37,18 @@
   }
   </style>
 </head>
-<body>
+<body onload="init()">
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script src="http://d3js.org/d3.geo.projection.v0.min.js"></script>
   <script src="js/d3.acmp.js"></script>
   <script src="http://d3js.org/topojson.v1.min.js"></script>
+  <script src="js/application.js"></script>
   <script type="text/javascript">
 
-  var width = window.width,
-      height = window.height,
-      scale = 1,
-      currentProj;
+  function init() {
+    app = new App({});
+  }
 
-  var rotate = [0,0];
-
-  var acmp = d3.geo.acmp();
-
-  var projPick = acmp.pick(1, [0,0]);
-
-  currentProj = projPick.name.toLowerCase();
-  d3.select("#proj").text( currentProj );
-
-  var path = d3.geo.path()
-      .projection(projPick.projection);
-
-  var graticule = d3.geo.graticule();
-
-  var m0,
-      o0;
-
-  var zoom = d3.behavior.zoom()
-      .center([width / 2, height / 2])
-      .on("zoomstart", function(){
-        m0 = [d3.event.sourceEvent.pageX, d3.event.sourceEvent.pageY];
-        if (currentProj == "albers") {
-          var proj = projPick.projection.rotate(),
-              cent = projPick.projection.center();
-          o0 = [-proj[0], cent[1]];
-        } else {
-          var proj = projPick.projection.rotate();
-          o0 = [-proj[0],-proj[1]];
-        }
-        d3.event.sourceEvent.stopPropagation();
-      })
-      .on("zoom", function() {
-        if (m0) {
-          var constant = (scale < 4) ? 4 : scale * 2;
-          var m1 = [d3.event.sourceEvent.pageX, d3.event.sourceEvent.pageY],
-              o1 = [o0[0] + (m0[0] - m1[0]) / constant, o0[1] + (m1[1] - m0[1]) / constant];
-        }
-
-        rotate = [-o1[0], -o1[1]];
-        scale = (d3.event.scale >= 1) ? d3.event.scale : 1;
-        projPick = acmp.pick(scale, rotate);
-        currentProj = projPick.name.toLowerCase();
-        d3.select("#proj").text(currentProj);
-
-        path = d3.geo.path().projection(projPick.projection);
-
-        d3.selectAll("path").attr("d", path);
-
-      });
-
-  var svg = d3.select("body").append("svg")
-      .attr("width", width)
-      .attr("height", height)
-      .append("g")
-      .call(zoom);
-      
-  svg.append("defs").append("path")
-      .datum({type: "Sphere"})
-      .attr("id", "sphere")
-      .attr("d", path);
-
-  svg.append("use")
-      .attr("class", "stroke")
-      .attr("xlink:href", "#sphere");
-
-  svg.append("use")
-      .attr("class", "fill")
-      .attr("xlink:href", "#sphere");
-
-  svg.append("path")
-      .datum(graticule)
-      .attr("class", "graticule")
-      .attr("d", path);
-
-  d3.json("countries_1e5.json", function(error, data) {
-
-    svg.selectAll(".countries")
-      .data(topojson.feature(data, data.objects.countries).features)
-      .enter().append("path")
-      .attr("class", "land")
-      .attr("d", path);
-
-    d3.select("body").append("text")
-      .attr("id", "info");
-    d3.select("body").append("text")
-      .attr("id", "proj");
-  });
 </script>
 </body>
 </html>
