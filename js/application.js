@@ -2,7 +2,7 @@ var App = function(){
   var self = this;
 
   this.width = document.getElementById("map").clientWidth;
-  this.height = window.screen.height / 1.5;
+  this.height = window.innerHeight;
 
   this.kooposm = KoopOSM('http://koop.dc.esri.com', d3);
   
@@ -68,7 +68,8 @@ App.prototype.initMap = function() {
       .data(topojson.feature(us, us.objects.UScounties).features)
     .enter().append("path")
       .attr('class', 'county-hidden')
-      .attr("d", self.path)
+      .attr("d", self.path);
+
   });
 
 };
@@ -80,12 +81,18 @@ App.prototype.initMap = function() {
 * TODO: logic for zipcodes
 *
 */
-App.prototype._mapClicked = function(d) {
+App.prototype._mapClicked = function(d, county) {
   var self = this;
 
   var x, y, k;
-
+  
   if (d && this.centered !== d) {
+    var centroid = self.path.centroid(d);
+    x = centroid[0];
+    y = centroid[1];
+    k = 4;
+    this.centered = d;
+  } else if (d && county && this.centered !== d) {
     var centroid = self.path.centroid(d);
     x = centroid[0];
     y = centroid[1];
@@ -96,6 +103,9 @@ App.prototype._mapClicked = function(d) {
     y = self.height / 2;
     k = 1;
     this.centered = null;
+    d3.selectAll('.county')
+      .attr('class', 'county-hidden');
+    county = null;
   }
 
   self.g.selectAll("path")
@@ -106,7 +116,12 @@ App.prototype._mapClicked = function(d) {
       .attr("transform", "translate(" + self.width / 2 + "," + self.height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
       .style("stroke-width", 1.5 / k + "px")
       .each("end", function() {
-        self._showCounties(d);
+        if ( county ) {
+          self._showCounty(d);
+        } else {
+          self._showCounties(d);
+        }
+
       });
 }
 
@@ -134,9 +149,40 @@ App.prototype._showCounties = function(state) {
       } else {
         return "county-hidden";
       }
+    })
+    .on("click", function(d) {
+      self._mapClicked(d, true)
     });
   
+  self._totalCountyByCountyByState( state );
 }
+
+
+/*
+* Show single selected county
+*
+*
+*/
+App.prototype._showCounty = function(county) {
+  var self = this;
+
+  d3.selectAll('.county')
+    .attr('class', 'county-hidden');
+
+  d3.selectAll('.county-hidden')
+    .attr('class', function(d) {
+      if (county.properties.NAME === d.properties.NAME && county.properties.STATE_NAME === d.properties.STATE_NAME) {
+        return "county";
+      } else {
+        return "county-hidden";
+      }
+    })
+    .on("click", function(d) {
+      self._mapClicked(d, true)
+    });
+
+}
+
 
 
 
@@ -147,6 +193,7 @@ App.prototype._showCounties = function(state) {
 */
 App.prototype._totalCountByState = function() {
   var self = this;
+
   var quantize = d3.scale.quantize()
     .domain([0, 0])
     .range(d3.range(9).map(function(i) { return "q" + i + "-9"; }));
@@ -188,6 +235,65 @@ App.prototype._totalCountByState = function() {
     d3.select('#total-feature-count').html( totalCount.toLocaleString() );
 
     console.log('TOTAL COUNT DOMAIN: ', quantize.domain());
+  });
+
+}
+
+
+
+/* 
+* Style selected state counties by TOTAL count (generic)
+*
+*
+*/ 
+App.prototype._totalCountyByCountyByState = function( state ) {
+  var self = this;
+  var name = state.properties.NAME10;
+  
+  var quantize = d3.scale.quantize()
+    .domain([0, 0])
+    .range(d3.range(9).map(function(i) { return "b" + i + "-9"; }));
+
+
+  this.kooposm.countyCounts('points',{},function(err, data) {
+
+    //need to know domain and populate selected counties array
+    var min = null, max = null, totalCount = 0, selectedCounties = [];
+
+    data.forEach(function(rec, i) {
+      
+      if ( rec.state === name ) {
+        if ( !max || rec.count >= max ) max = rec.count;
+        if ( !min || rec.count <= min ) min = rec.count;
+        quantize.domain([min, max]);
+
+        selectedCounties.push(rec);
+      }
+
+    });
+
+    d3.selectAll('.county')
+      .attr('class', function(d) {
+        var count = 0;
+        
+        selectedCounties.forEach(function(c,i) {
+          
+          if ( d.properties.NAME === c.county ) {
+            count = c.count;
+          }
+
+        });
+
+        totalCount += count;
+
+        //console.log('quantize( count )', quantize( count ))
+        var style = "county " + quantize( count )
+        return style;
+
+      });
+
+    d3.select('#total-feature-count').html( totalCount.toLocaleString() );
+
   });
 
 }

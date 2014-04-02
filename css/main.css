@@ -37,7 +37,7 @@ body, html {
   display:none;
   position: absolute;
   bottom: 33px;
-  background: #FFF;
+  background: rgba(252, 252, 250, 0.86);
   width: 100%;
 }
 
@@ -53,6 +53,7 @@ body, html {
 /* MAP */
 #map {
   height:100%;
+  cursor:pointer;
 }
 .background {
   fill: none;
@@ -64,7 +65,7 @@ body, html {
 }
 
 #states .active {
-  fill:#95A5A6;
+  fill:none;
 }
 
 #state-borders {
@@ -87,7 +88,7 @@ body, html {
   stroke-width: 0.5px;
   stroke-linejoin: round;
   stroke-linecap: round;
-  pointer-events: none;
+  pointer-events: all !important;
 }
 
 .no-county {
@@ -95,6 +96,7 @@ body, html {
 }
 
 /* STYLE MAP */
+/* blue */
 .q0-9 { fill:rgb(247,251,255); }
 .q1-9 { fill:rgb(222,235,247); }
 .q2-9 { fill:rgb(198,219,239); }
@@ -104,3 +106,14 @@ body, html {
 .q6-9 { fill:rgb(33,113,181); }
 .q7-9 { fill:rgb(8,81,156); }
 .q8-9 { fill:rgb(8,48,107); }
+
+/* red */
+.b0-9 { fill:rgb(255,245,235); }
+.b1-9 { fill:rgb(254,230,206); }
+.b2-9 { fill:rgb(253,208,162); }
+.b3-9 { fill:rgb(253,174,107); }
+.b4-9 { fill:rgb(253,141,60); }
+.b5-9 { fill:rgb(241,105,19); }
+.b6-9 { fill:rgb(217,72,1); }
+.b7-9 { fill:rgb(166,54,3); }
+.b8-9 { fill:rgb(127,39,4); }
