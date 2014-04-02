@@ -28,9 +28,26 @@ body, html {
 #download {
   font-size: 1.3em;
   position: absolute;
-  bottom: 10px;
+  bottom: 40px;
 }
 
+
+/* DASH */
+#dash {
+  display:none;
+  position: absolute;
+  bottom: 33px;
+  background: #FFF;
+  width: 100%;
+}
+
+.stat {
+  text-align: center;
+}
+
+#total-feature-count {
+  font-size: 1.4em;
+}
 
 
 /* MAP */

@@ -2,7 +2,7 @@ var App = function(){
   var self = this;
 
   this.width = document.getElementById("map").clientWidth;
-  this.height = window.screen.height / 1.8;
+  this.height = window.screen.height / 1.5;
 
   this.kooposm = KoopOSM('http://koop.dc.esri.com', d3);
   
@@ -124,6 +124,9 @@ App.prototype._showCounties = function(state) {
   d3.selectAll('.county')
     .attr('class', 'county-hidden');
   
+  d3.select("#geographic-extent").html("Current Extent: " + state.properties.NAME10);
+  d3.select('#total-feature-count').html( 0 );
+
   d3.selectAll('.county-hidden')
     .attr('class', function(d) {
       if (state.properties.NAME10 === d.properties.STATE_NAME) {
@@ -151,11 +154,11 @@ App.prototype._totalCountByState = function() {
   this.kooposm.stateCounts('points',{},function(err, data){ 
     
     //need to know domain 
-    var min = null, max = null;
+    var min = null, max = null, totalCount = 0;
     data.forEach(function(st,i) {
       if ( !max || st.count >= max ) max = st.count;
       if ( !min || st.count <= min ) min = st.count;
-      quantize.domain([min, max]);
+      quantize.domain([min, 150000]);
     });
 
     d3.selectAll('.state')
@@ -168,14 +171,21 @@ App.prototype._totalCountByState = function() {
           }
         });
 
+        totalCount += count;
+
         //for now not all states have count, but we still want to color them
         if ( count === 0 ) {
           return "state"
         } else {
           return quantize( count );
         }
-        
+
       });
+
+    document.getElementById('dash').style.display = "block";
+    d3.select("#selection").html("Total Data Count");
+    d3.select("#geographic-extent").html("Current Extent: United States");
+    d3.select('#total-feature-count').html( totalCount.toLocaleString() );
 
     console.log('TOTAL COUNT DOMAIN: ', quantize.domain());
   });
