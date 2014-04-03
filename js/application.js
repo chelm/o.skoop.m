@@ -86,7 +86,7 @@ App.prototype._mapClicked = function(d, county) {
 
   var x, y, k;
   
-  if (d && this.centered !== d) {
+  if (d && this.centered !== d && !county) {
     var centroid = self.path.centroid(d);
     x = centroid[0];
     y = centroid[1];
@@ -96,7 +96,7 @@ App.prototype._mapClicked = function(d, county) {
     var centroid = self.path.centroid(d);
     x = centroid[0];
     y = centroid[1];
-    k = 4;
+    k = 13;
     this.centered = d;
   } else {
     x = self.width / 2;
@@ -107,6 +107,8 @@ App.prototype._mapClicked = function(d, county) {
       .attr('class', 'county-hidden');
     county = null;
   }
+
+  console.log('k', k);
 
   self.g.selectAll("path")
       .classed("active", self.centered && function(d) { return d === self.centered; });
@@ -139,7 +141,7 @@ App.prototype._showCounties = function(state) {
   d3.selectAll('.county')
     .attr('class', 'county-hidden');
   
-  d3.select("#geographic-extent").html("Current Extent: " + state.properties.NAME10);
+  d3.select("#geographic-extent").html(state.properties.NAME10);
   d3.select('#total-feature-count').html( 0 );
 
   d3.selectAll('.county-hidden')
@@ -180,6 +182,8 @@ App.prototype._showCounty = function(county) {
     .on("click", function(d) {
       self._mapClicked(d, true)
     });
+
+  d3.select("#geographic-extent").html(county.properties.NAME + " County");
 
 }
 
@@ -231,7 +235,7 @@ App.prototype._totalCountByState = function() {
 
     document.getElementById('dash').style.display = "block";
     d3.select("#selection").html("Total Data Count");
-    d3.select("#geographic-extent").html("Current Extent: United States");
+    d3.select("#geographic-extent").html("United States");
     d3.select('#total-feature-count').html( totalCount.toLocaleString() );
 
     console.log('TOTAL COUNT DOMAIN: ', quantize.domain());
