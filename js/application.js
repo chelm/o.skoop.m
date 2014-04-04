@@ -4,9 +4,20 @@ var App = function(){
   this.width = document.getElementById("map").clientWidth;
   this.height = window.innerHeight;
 
-  this.kooposm = KoopOSM('http://koop.dc.esri.com', d3);
+  this.dataType = 'points';
+  this.zlevel = 'nation';
+
+  //this.kooposm = KoopOSM('http://koop-load-balancer-1909547375.us-east-1.elb.amazonaws.com', d3);
+  this.kooposm = KoopOSM('http://54.197.196.9', d3);
   
   this.initMap();
+
+  d3.select('#data-type-select').on('change', function(){
+    self.dataType = this.value;
+    if (self.zlevel == 'nation'){
+      self._totalCountByState();
+    }
+  })
 
 }
 
@@ -202,7 +213,7 @@ App.prototype._totalCountByState = function() {
     .domain([0, 0])
     .range(d3.range(9).map(function(i) { return "q" + i + "-9"; }));
 
-  this.kooposm.stateCounts('points',{},function(err, data){ 
+  this.kooposm.stateCounts(this.dataType,{},function(err, data){ 
     
     //need to know domain 
     var min = null, max = null, totalCount = 0;
@@ -236,7 +247,7 @@ App.prototype._totalCountByState = function() {
     document.getElementById('dash').style.display = "block";
     d3.select("#selection").html("Total Data Count");
     d3.select("#geographic-extent").html("United States");
-    d3.select('#total-feature-count').html( totalCount.toLocaleString() );
+    d3.select('#total-feature-count').html( totalCount.toLocaleString() + ' ' + self.dataType );
 
     console.log('TOTAL COUNT DOMAIN: ', quantize.domain());
   });
@@ -259,7 +270,7 @@ App.prototype._totalCountyByCountyByState = function( state ) {
     .range(d3.range(9).map(function(i) { return "b" + i + "-9"; }));
 
 
-  this.kooposm.countyCounts('points',{},function(err, data) {
+  this.kooposm.countyCounts(this.dataType,{},function(err, data) {
 
     //need to know domain and populate selected counties array
     var min = null, max = null, totalCount = 0, selectedCounties = [];
