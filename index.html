@@ -9,22 +9,33 @@
   
 </head>
 <body onload="init()">
-  <div id="col-left" class="col-md-4 col-sm-4">
+  <div id="col-left" class="col-md-3 col-sm-4">
     <h1>o.skoop.m</h1>
-    <h5>A Simple UI for Fine Grained Access to OSM</h5>
+    <h5>Download OSM data</h5>
     <form role="form" id="form-main">
+      <h2>Data Type</h2>
       <div class="form-group">
         <select type="" class="form-control" id="data-type-select">
-          <option id="select-data-type">Select Data Type</option>
+          <option id="select-data-type" value="points">Points</option>
+          <option id="select-data-type" value="lines">Lines</option>
+          <option id="select-data-type" value="polygons">Polygons</option>
         </select>
       </div>
-      <button type="submit" class="btn btn-default" id="search-submit">Submit</button>
+      <h2>Filters</h2>
+      <div class="form-group">
+        <select type="" class="form-control" id="attr-select">
+          <option id="select-data-type">Select an attribute to filter on</option>
+          <option id="select-data-type" value="amenity">amenity</option>
+        </select>
+        <small>I think this could be an editable data table where you see fields & values (empty). User would enter comma sep. lists into values.
+        </small>
+      </div>
     </form>
     <div class="col-md-2 col-sm-2"></div>
       <button id="download" class="btn btn-success col-md-8 col-sm-8" disabled="disabled">Download</button>
     <div class="col-md-2 col-sm-2"></div>
   </div>
-  <div id="map" class="col-md-8 col-sm-8">
+  <div id="map" class="col-md-9 col-sm-8">
     <div id="dash" class="col-md-12 col-sm-12">
       <h3><span id="geographic-extent"></span> <small id="selection"></small></h3>
       <div class="stats">

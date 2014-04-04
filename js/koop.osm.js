@@ -2,7 +2,16 @@
   var KoopOSM = function(host, d3){
 
     var stateCounts = function(type, where, callback){
-      d3.json(host+'/osm/'+type+'/state/count', function(err, data){
+      var url = host+'/osm/'+type+'/state/count';
+      var qs = [];
+      for (key in where){
+        qs.push(key +"='"+ where[key] + "'");
+      }
+      if (qs.length){
+        url += '?where='+qs.join('&');
+      }
+      console.log(url);
+      d3.json(url, function(err, data){
         callback(err, data);
       });
     };
