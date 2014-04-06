@@ -342,7 +342,7 @@ App.prototype._showFilters = function() {
       //console.log(val);
       el.append('li')
         .attr('id', val )
-        .attr('class', 'filter list-group-item glyphicon glyphicon-ok')
+        .attr('class', 'filter list-group-item')
         .text( val );
     });
     d3.selectAll('.filter').on('click', function(){
