@@ -10,8 +10,8 @@
 </head>
 <body onload="init()">
   <div id="col-left" class="col-md-3 col-sm-4">
-    <h1>o.skoop.m</h1>
-    <h5>Download OSM data</h5>
+    <!--h1>o.skoop.m</h1>
+    <h5>Download OSM data</h5-->
     <form role="form" id="form-main">
       <h2>Data Type</h2>
       <div class="form-group">
@@ -25,11 +25,10 @@
       <div class="form-group">
         <select type="" class="form-control" id="attr-select">
           <option id="select-data-type">Select an attribute to filter on</option>
-          <option id="select-data-type" value="amenity">amenity</option>
         </select>
-        <small>I think this could be an editable data table where you see fields & values (empty). User would enter comma sep. lists into values.
-        </small>
       </div>
+      <ul id="value-select" class="list-group">
+      </ul>
     </form>
     <div class="col-md-2 col-sm-2"></div>
       <button id="download" class="btn btn-success col-md-8 col-sm-8" disabled="disabled">Download</button>
@@ -37,10 +36,12 @@
   </div>
   <div id="map" class="col-md-9 col-sm-8">
     <div id="dash" class="col-md-12 col-sm-12">
-      <h3><span id="geographic-extent"></span> <small id="selection"></small></h3>
+      <ol id="extent" class="breadcrumb">
+        <li><a href="#">United States</a></li>
+      </ol>
       <div class="stats">
         <div class="stat col-md-2 col-sm-2">
-          <div class="">Feature Count</div>
+          <div class=""></div>
           <div id="total-feature-count" class=""></div>
         </div>
       </div>

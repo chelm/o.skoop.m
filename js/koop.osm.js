@@ -2,6 +2,10 @@
   var KoopOSM = function(host, d3){
 
     var stateCounts = function(type, where, callback){
+      console.log('WHERE', where);
+      for (key in where){
+        
+      }
       _count('state', type, where, callback);
     };
 

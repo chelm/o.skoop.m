@@ -3,7 +3,7 @@ body {
   margin:0;
   padding:0;
   font: 17px/28px Georgia;
-  font-family: Lato, 'Helvetica Neue';
+  font-family: 'Helvetica Neue';
   -webkit-font-smoothing: antialiased;
 }
 
@@ -37,6 +37,7 @@ body, html {
   display:none;
   position: absolute;
   bottom: 0px;
+  right: 10px;
   background: rgba(252, 252, 250, 0.86);
   width: 100%;
   padding-bottom: 33px;
@@ -86,7 +87,6 @@ body, html {
   display: block;
   fill: none;
   stroke: #fff;
-  stroke-width: 0.5px;
   stroke-linejoin: round;
   stroke-linecap: round;
   pointer-events: all !important;
@@ -118,3 +118,20 @@ body, html {
 .b6-9 { fill:rgb(217,72,1); }
 .b7-9 { fill:rgb(166,54,3); }
 .b8-9 { fill:rgb(127,39,4); }
+
+#value-select {
+  height: 400px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  font-size: 14px;
+}
+
+.filter {
+}
+
+.filter:hover {
+  cursor: pointer;
+  background-color: #428bca;
+  border-color: #428bca;
+  color: #FFF;
+}

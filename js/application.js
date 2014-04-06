@@ -7,19 +7,38 @@ var App = function(){
   this.dataType = 'points';
   this.zlevel = 'nation';
 
-  //this.kooposm = KoopOSM('http://koop-load-balancer-1909547375.us-east-1.elb.amazonaws.com', d3);
-  this.kooposm = KoopOSM('http://54.197.196.9', d3);
+  this.filters = {};
+
+  this.kooposm = KoopOSM('http://koop-load-balancer-1909547375.us-east-1.elb.amazonaws.com', d3);
+  //this.kooposm = KoopOSM('http://54.197.196.9', d3);
   
   this.initMap();
+  this.bindUI(); 
+  this._updateFields();
+}
+
+App.prototype.bindUI = function() {
+  var self = this;
 
   d3.select('#data-type-select').on('change', function(){
     self.dataType = this.value;
-    if (self.zlevel == 'nation'){
+    if (!self.state){
       self._totalCountByState();
+    } else if (!self.county) {
+      self._totalCountByCounty();
     }
-  })
 
-}
+    if ( this.field ){
+      self._showFilters();
+    }
+  });
+
+  d3.select('#attr-select').on('change', function(){
+    self.field = this.value;
+    self._showFilters();
+  });
+
+};
 
 App.prototype.initMap = function() {
   var self = this;
@@ -119,13 +138,13 @@ App.prototype._mapClicked = function(d, county) {
     county = null;
   }
 
-  console.log('k', k);
+  //console.log('k', k);
 
   self.g.selectAll("path")
       .classed("active", self.centered && function(d) { return d === self.centered; });
 
   self.g.transition()
-      .duration(750)
+      .duration(250)
       .attr("transform", "translate(" + self.width / 2 + "," + self.height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
       .style("stroke-width", 1.5 / k + "px")
       .each("end", function() {
@@ -136,6 +155,23 @@ App.prototype._mapClicked = function(d, county) {
         }
 
       });
+
+  if (self.centered){
+    self.state = self.centered.properties.STATE_NAME || self.centered.properties.NAME10;
+    self.county = self.centered.properties.NAME;
+  } else {
+    self.state = null, self.county = null;
+  }
+
+  self.removeCrumb('state');
+  self.removeCrumb('county');
+
+  if (self.state){
+    self.addCrumb(self.state, 'state');
+  }
+  if (self.county){
+    self.addCrumb(self.county, 'county');
+  }
 }
 
 
@@ -166,8 +202,9 @@ App.prototype._showCounties = function(state) {
     .on("click", function(d) {
       self._mapClicked(d, true)
     });
+
   
-  self._totalCountyByCountyByState( state );
+  self._totalCountByCountyByState( state );
 }
 
 
@@ -184,11 +221,11 @@ App.prototype._showCounty = function(county) {
 
   d3.selectAll('.county-hidden')
     .attr('class', function(d) {
-      if (county.properties.NAME === d.properties.NAME && county.properties.STATE_NAME === d.properties.STATE_NAME) {
+      //if (county.properties.NAME === d.properties.NAME && county.properties.STATE_NAME === d.properties.STATE_NAME) {
         return "county";
-      } else {
-        return "county-hidden";
-      }
+      //} else {
+      //  return "county-hidden";
+      //}
     })
     .on("click", function(d) {
       self._mapClicked(d, true)
@@ -213,7 +250,7 @@ App.prototype._totalCountByState = function() {
     .domain([0, 0])
     .range(d3.range(9).map(function(i) { return "q" + i + "-9"; }));
 
-  this.kooposm.stateCounts(this.dataType,{},function(err, data){ 
+  this.kooposm.stateCounts(this.dataType, this.filters, function(err, data){ 
     
     //need to know domain 
     var min = null, max = null, totalCount = 0;
@@ -245,8 +282,10 @@ App.prototype._totalCountByState = function() {
       });
 
     document.getElementById('dash').style.display = "block";
-    d3.select("#selection").html("Total Data Count");
-    d3.select("#geographic-extent").html("United States");
+    //d3.select("#selection").html("Total Data Count");
+    //d3.select("#geographic-extent").html("United States");
+    self.removeCrumb('state');
+    self.removeCrumb('county');
     d3.select('#total-feature-count').html( totalCount.toLocaleString() + ' ' + self.dataType );
 
     console.log('TOTAL COUNT DOMAIN: ', quantize.domain());
@@ -254,16 +293,86 @@ App.prototype._totalCountByState = function() {
 
 }
 
+/* 
+*
+*/
+App.prototype.addCrumb = function( id, type ) {
+  d3.select('li.' + type + 'crumb').remove();
+  d3.select('.breadcrumb' )
+    .append('li')
+      .attr('class', type+'crumb')
+    .append('a')
+      .attr('id', id)
+      .text(id);
+};
 
+/* 
+*
+*/
+App.prototype.removeCrumb = function( type ) {
+  d3.select('.breadcrumb li.'+type+'crumb' ).remove();
+};
+
+/* 
+*
+*/
+App.prototype._updateFields = function() {
+
+  var el = d3.select('#attr-select');
+  this.kooposm.fields(this.dataType, function(err, fields){
+    fields.forEach(function(field, i){
+      el.append('option')
+        .attr('value', field )
+        .text( field );
+    });
+  })
+
+};
+
+
+
+App.prototype._showFilters = function() {
+  var self = this;
+  d3.selectAll('.filter').remove();
+  var el = d3.select('#value-select');
+
+  this.kooposm.distinct(this.dataType, this.field, function(err, values){
+    
+    values.sort().forEach(function(val, i){
+      //console.log(val);
+      el.append('li')
+        .attr('id', val )
+        .attr('class', 'filter list-group-item glyphicon glyphicon-ok')
+        .text( val );
+    });
+    d3.selectAll('.filter').on('click', function(){
+      
+      if (!self.filters[self.field]) self.filters[self.field] = {};
+      self.filters[self.field][this.id] = true;
+      self.reloadMap();
+    });
+  });
+};
+
+
+App.prototype.reloadMap = function(){
+  if (this.state && this.county){
+  
+  } else if (this.state && !this.county){
+    this._totalCountByCountyByState(this.state);
+  } else {
+    this._totalCountByState();
+  }
+};
 
 /* 
 * Style selected state counties by TOTAL count (generic)
 *
 *
 */ 
-App.prototype._totalCountyByCountyByState = function( state ) {
+App.prototype._totalCountByCountyByState = function( ) {
   var self = this;
-  var name = state.properties.NAME10;
+  //var name = state.properties.NAME10;
   
   var quantize = d3.scale.quantize()
     .domain([0, 0])
@@ -277,7 +386,7 @@ App.prototype._totalCountyByCountyByState = function( state ) {
 
     data.forEach(function(rec, i) {
       
-      if ( rec.state === name ) {
+      if ( rec.state === self.state ) {
         if ( !max || rec.count >= max ) max = rec.count;
         if ( !min || rec.count <= min ) min = rec.count;
         quantize.domain([min, max]);
@@ -311,4 +420,9 @@ App.prototype._totalCountyByCountyByState = function( state ) {
 
   });
 
-}
+};
+
+App.prototype.buildQueryString = function(){
+  console.log('filters', this.state, this.county);
+}; 
+
