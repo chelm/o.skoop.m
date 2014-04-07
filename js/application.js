@@ -25,7 +25,7 @@ App.prototype.bindUI = function() {
     if (!self.state){
       self._totalCountByState();
     } else if (!self.county) {
-      self._totalCountByCounty();
+      self._totalCountByCountyByState();
     }
 
     if ( this.field ){
@@ -257,8 +257,11 @@ App.prototype._totalCountByState = function() {
     data.forEach(function(st,i) {
       if ( !max || st.count >= max ) max = st.count;
       if ( !min || st.count <= min ) min = st.count;
-      quantize.domain([min, 150000]);
+      quantize.domain([min, max]);
+      totalCount += st.count;
     });
+
+    console.log('MINMAX', min, max, self.dataType, d3.selectAll('.state'));
 
     d3.selectAll('.state')
       .attr('class', function(d) {
@@ -266,18 +269,19 @@ App.prototype._totalCountByState = function() {
         
         data.forEach(function(st,i) {
           if ( d.properties.NAME10 === st.state ) {
+            if (self.dataType == 'lines') console.log(st)
             count = st.count;
           }
         });
-
         totalCount += count;
 
         //for now not all states have count, but we still want to color them
-        if ( count === 0 ) {
-          return "state"
-        } else {
-          return quantize( count );
-        }
+        //if ( count === 0 ) {
+        //  return "state"
+        //} else {
+          console.log(quantize( count ))
+          return 'state ' + quantize( count );
+        //}
 
       });
 
@@ -339,7 +343,6 @@ App.prototype._showFilters = function() {
   this.kooposm.distinct(this.dataType, this.field, function(err, values){
     
     values.sort().forEach(function(val, i){
-      //console.log(val);
       el.append('li')
         .attr('id', val )
         .attr('class', 'filter list-group-item')
