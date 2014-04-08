@@ -289,7 +289,7 @@ App.prototype._totalCountByState = function() {
         var mouse = d3.mouse(this);
         var state = d.properties.NAME10;
         var count = d.properties.count.toLocaleString();
-        var content = '<span id="info-title">'+state+'</span><br /><span>Total Count: '+count+'</span>';
+        var content = '<span id="info-title">'+state+'</span><br /><span>Total '+self.dataType+': '+count+'</span>';
         d3.select('#infowin').style({'display': 'block', 'left': mouse[0]+50+'px', 'top': mouse[1]-60+'px'}).html( content );
       })
       .on('mouseexit', function() {
@@ -434,7 +434,7 @@ App.prototype._totalCountByCountyByState = function( ) {
         var mouse = d3.mouse(this);
         var state = d.properties.NAME;
         var count = d.properties.count.toLocaleString();
-        var content = '<span id="info-title">'+state+'</span><br /><span>Total Count: '+count+'</span>';
+        var content = '<span id="info-title">'+state+'</span><br /><span>Total '+self.dataType+': '+count+'</span>';
         d3.select('#infowin').style({'display': 'block', 'left': mouse[0]+50+'px', 'top': mouse[1]-60+'px'}).html( content );
       })
       .on('mouseexit', function() {
