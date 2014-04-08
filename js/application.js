@@ -270,6 +270,7 @@ App.prototype._totalCountByState = function() {
         data.forEach(function(st,i) {
           if ( d.properties.NAME10 === st.state ) {
             if (self.dataType == 'lines') console.log(st)
+            d.properties.count = st.count;
             count = st.count;
           }
         });
@@ -283,6 +284,16 @@ App.prototype._totalCountByState = function() {
           return 'state ' + quantize( count );
         //}
 
+      })
+      .on('mouseenter', function(d) {
+        var mouse = d3.mouse(this);
+        var state = d.properties.NAME10;
+        var count = d.properties.count.toLocaleString();
+        var content = '<span id="info-title">'+state+'</span><br /><span>Total Count: '+count+'</span>';
+        d3.select('#infowin').style({'display': 'block', 'left': mouse[0]+50+'px', 'top': mouse[1]-60+'px'}).html( content );
+      })
+      .on('mouseexit', function() {
+        d3.select('#infowin').style({'display':'none'});
       });
 
     document.getElementById('dash').style.display = "block";
@@ -407,6 +418,7 @@ App.prototype._totalCountByCountyByState = function( ) {
           
           if ( d.properties.NAME === c.county ) {
             count = c.count;
+            d.properties.count = c.count;
           }
 
         });
@@ -417,6 +429,16 @@ App.prototype._totalCountByCountyByState = function( ) {
         var style = "county " + quantize( count )
         return style;
 
+      })
+      .on('mouseenter', function(d) {
+        var mouse = d3.mouse(this);
+        var state = d.properties.NAME;
+        var count = d.properties.count.toLocaleString();
+        var content = '<span id="info-title">'+state+'</span><br /><span>Total Count: '+count+'</span>';
+        d3.select('#infowin').style({'display': 'block', 'left': mouse[0]+50+'px', 'top': mouse[1]-60+'px'}).html( content );
+      })
+      .on('mouseexit', function() {
+        d3.select('#infowin').style({'display':'none'});
       });
 
     d3.select('#total-feature-count').html( totalCount.toLocaleString() );
