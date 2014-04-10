@@ -13,8 +13,8 @@ var App = function(){
   
   this.initMap();
   this.bindUI(); 
-  this._updateFields();
   this._updateLink();
+  this._updateFields();
 }
 
 App.prototype.bindUI = function() {
@@ -27,8 +27,10 @@ App.prototype.bindUI = function() {
     } else if (!self.county) {
       self._totalCountByCountyByState();
     }
+    self._updateFields();
+    self._updateLink();
 
-    if ( this.field ){
+    if ( self.field ){
       self._showFilters();
     }
   });
@@ -355,10 +357,10 @@ App.prototype._showFilters = function() {
         .text( val );
     });
     d3.selectAll('.filter').on('click', function(){
-      
-      if (!self.filters[self.field]) self.filters[self.field] = {};
-      self.filters[self.field][this.id] = true;
-      self.reloadMap();
+      //if (!self.filters[self.field]) self.filters[self.field] = {};
+      self.filters[self.field] = this.id;
+      //self.reloadMap();
+      self._updateLink();
     });
   });
 };
@@ -447,7 +449,6 @@ App.prototype.buildQueryString = function(){
 }; 
 
 App.prototype._updateLink = function(){
-  //console.log('update link', this.state, this.county, this.dataType, this.kooposm.host, this.filters);
   var url = this.kooposm.host + '/osm/'+this.dataType;
   if (this.state){
     url += '/state/'+this.state;
@@ -456,11 +457,16 @@ App.prototype._updateLink = function(){
     url += '/county/'+this.county;
   }
 
-  console.log(url, this.field);
+  if ( Object.keys(this.filters).length ){
+    for (var f in this.filters){
+      url += '/field/' + f + '/' + this.filters[f];
+    }
+  }
+
+  console.log(url, this.filters);
   d3.select('#download')
     .attr('href', url)
     .text(url);
-  
   
 }; 
 

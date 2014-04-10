@@ -25,10 +25,13 @@ body, html {
   margin-top:50px;
 }
 
+#download-wrapper{
+  width: 300px;
+}
+
 #download {
   font-size: 1.3em;
-  position: absolute;
-  bottom: 40px;
+  word-wrap: break-word;
 }
 
 
