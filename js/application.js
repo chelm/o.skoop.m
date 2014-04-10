@@ -432,11 +432,20 @@ App.prototype.buildQueryString = function(){
 }; 
 
 App.prototype._updateLink = function(){
-  console.log('update link', this.state, this.county, this.dataType, this.kooposm.host, this.filters);
+  //console.log('update link', this.state, this.county, this.dataType, this.kooposm.host, this.filters);
   var url = this.kooposm.host + '/osm/'+this.dataType;
-  console.log(url);
+  if (this.state){
+    url += '/state/'+this.state;
+  }
+  if (this.county){
+    url += '/county/'+this.county;
+  }
+
+  console.log(url, this.field);
   d3.select('#download')
     .attr('href', url)
     .text(url);
+  
+  
 }; 
 
