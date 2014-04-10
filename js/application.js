@@ -9,12 +9,12 @@ var App = function(){
 
   this.filters = {};
 
-  this.kooposm = KoopOSM('http://koop-load-balancer-1909547375.us-east-1.elb.amazonaws.com', d3);
-  //this.kooposm = KoopOSM('http://54.197.196.9', d3);
+  this.kooposm = KoopOSM('http://koop.dc.esri.com', d3);
   
   this.initMap();
   this.bindUI(); 
   this._updateFields();
+  this._updateLink();
 }
 
 App.prototype.bindUI = function() {
@@ -163,15 +163,17 @@ App.prototype._mapClicked = function(d, county) {
     self.state = null, self.county = null;
   }
 
-  self.removeCrumb('state');
-  self.removeCrumb('county');
+  //self.removeCrumb('state');
+  //self.removeCrumb('county');
 
   if (self.state){
-    self.addCrumb(self.state, 'state');
+    //self.addCrumb(self.state, 'state');
   }
   if (self.county){
-    self.addCrumb(self.county, 'county');
+    //self.addCrumb(self.county, 'county');
   }
+
+  self._updateLink();
 }
 
 
@@ -189,7 +191,7 @@ App.prototype._showCounties = function(state) {
     .attr('class', 'county-hidden');
   
   d3.select("#geographic-extent").html(state.properties.NAME10);
-  d3.select('#total-feature-count').html( 0 );
+  //d3.select('#total-feature-count').html( 0 );
 
   d3.selectAll('.county-hidden')
     .attr('class', function(d) {
@@ -288,8 +290,8 @@ App.prototype._totalCountByState = function() {
     document.getElementById('dash').style.display = "block";
     //d3.select("#selection").html("Total Data Count");
     //d3.select("#geographic-extent").html("United States");
-    self.removeCrumb('state');
-    self.removeCrumb('county');
+    //self.removeCrumb('state');
+    //self.removeCrumb('county');
     d3.select('#total-feature-count').html( totalCount.toLocaleString() + ' ' + self.dataType );
 
     console.log('TOTAL COUNT DOMAIN: ', quantize.domain());
@@ -427,5 +429,14 @@ App.prototype._totalCountByCountyByState = function( ) {
 
 App.prototype.buildQueryString = function(){
   console.log('filters', this.state, this.county);
+}; 
+
+App.prototype._updateLink = function(){
+  console.log('update link', this.state, this.county, this.dataType, this.kooposm.host, this.filters);
+  var url = this.kooposm.host + '/osm/'+this.dataType;
+  console.log(url);
+  d3.select('#download')
+    .attr('href', url)
+    .text(url);
 }; 
 
