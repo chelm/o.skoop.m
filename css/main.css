@@ -66,8 +66,9 @@ body, html {
   fill: #7F8C8D;
 }
 
-#states .active {
-  fill:none;
+.county.active {
+  stroke-width: 0.5;
+  stroke: #6d8ca0;
 }
 
 #state-borders {

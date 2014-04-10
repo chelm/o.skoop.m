@@ -216,17 +216,10 @@ App.prototype._showCounties = function(state) {
 App.prototype._showCounty = function(county) {
   var self = this;
 
-  d3.selectAll('.county')
-    .attr('class', 'county-hidden');
+  //d3.selectAll('.county')
+//    .attr('class', 'county-hidden');
 
   d3.selectAll('.county-hidden')
-    .attr('class', function(d) {
-      //if (county.properties.NAME === d.properties.NAME && county.properties.STATE_NAME === d.properties.STATE_NAME) {
-        return "county";
-      //} else {
-      //  return "county-hidden";
-      //}
-    })
     .on("click", function(d) {
       self._mapClicked(d, true)
     });
