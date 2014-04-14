@@ -32,8 +32,15 @@
       });
     }
 
-    var distinct = function(type, field, callback){
-      var url = host+'/osm/'+type+"/distinct/"+field
+    var distinct = function(type, field, where, callback){
+      var url = host+'/osm/'+type+"/distinct/"+field;
+      if ( where.state ){
+        url+="?where=state='"+where.state+"'";
+      }
+      if ( where.county ){
+        url+=" AND county='" + where.county + "'";
+      }
+      console.log('DISTINCT', url);
       _req(url, callback);
     };
 

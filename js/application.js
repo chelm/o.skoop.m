@@ -7,7 +7,13 @@ var App = function(){
   this.dataType = 'points';
   this.zlevel = 'nation';
 
-  this.filters = {};
+  this.filter = null;
+  
+  this.maxs = {
+    points: 250000,
+    lines: 450000,
+    polygons: 5000
+  };
 
   this.kooposm = KoopOSM('http://koop.dc.esri.com', d3);
   
@@ -24,7 +30,7 @@ App.prototype.bindUI = function() {
     self.dataType = this.value;
     if (!self.state){
       self._totalCountByState();
-    } else if (!self.county) {
+    } else if (self.state) {
       self._totalCountByCountyByState();
     }
     self._updateFields();
@@ -146,19 +152,20 @@ App.prototype._mapClicked = function(d, county) {
       .classed("active", self.centered && function(d) { return d === self.centered; });
 
   self.g.transition()
-      .duration(250)
+      .duration( 250 )
       .attr("transform", "translate(" + self.width / 2 + "," + self.height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
       .style("stroke-width", 1.5 / k + "px")
       .each("end", function() {
         if ( county ) {
           self._showCounty(d);
         } else {
+          console.log(d);
           self._showCounties(d);
         }
 
       });
 
-  if (self.centered){
+  if ( self.centered ){
     self.state = self.centered.properties.STATE_NAME || self.centered.properties.NAME10;
     self.county = self.centered.properties.NAME;
   } else {
@@ -175,6 +182,9 @@ App.prototype._mapClicked = function(d, county) {
     //self.addCrumb(self.county, 'county');
   }
 
+  if (self.field){
+    self._showFilters();
+  }
   self._updateLink();
 }
 
@@ -187,12 +197,11 @@ App.prototype._mapClicked = function(d, county) {
 */
 App.prototype._showCounties = function(state) {
   var self = this;
-
   
   d3.selectAll('.county')
     .attr('class', 'county-hidden');
   
-  d3.select("#geographic-extent").html(state.properties.NAME10);
+  //d3.select("#geographic-extent").html(this.state.properties.NAME10);
   //d3.select('#total-feature-count').html( 0 );
 
   d3.selectAll('.county-hidden')
@@ -228,7 +237,7 @@ App.prototype._showCounty = function(county) {
       self._mapClicked(d, true)
     });
 
-  d3.select("#geographic-extent").html(county.properties.NAME + " County");
+  //d3.select("#geographic-extent").html(county.properties.NAME + " County");
 
 }
 
@@ -243,18 +252,20 @@ App.prototype._showCounty = function(county) {
 App.prototype._totalCountByState = function() {
   var self = this;
 
+
   var quantize = d3.scale.quantize()
     .domain([0, 0])
     .range(d3.range(9).map(function(i) { return "q" + i + "-9"; }));
 
-  this.kooposm.stateCounts(this.dataType, this.filters, function(err, data){ 
+  this.kooposm.stateCounts(this.dataType, this.filter, function(err, data){ 
     
     //need to know domain 
     var min = null, max = null, totalCount = 0;
     data.forEach(function(st,i) {
       if ( !max || st.count >= max ) max = st.count;
       if ( !min || st.count <= min ) min = st.count;
-      quantize.domain([min, max]);
+      //quantize.domain([min, max]);
+      quantize.domain([min, self.maxs[self.dataType]]);
       totalCount += st.count;
     });
 
@@ -348,7 +359,7 @@ App.prototype._showFilters = function() {
   d3.selectAll('.filter').remove();
   var el = d3.select('#value-select');
 
-  this.kooposm.distinct(this.dataType, this.field, function(err, values){
+  this.kooposm.distinct(this.dataType, this.field, { state: this.state, county: this.county }, function(err, values){
     
     values.sort().forEach(function(val, i){
       el.append('li')
@@ -357,8 +368,14 @@ App.prototype._showFilters = function() {
         .text( val );
     });
     d3.selectAll('.filter').on('click', function(){
+      d3.select('li.active').attr('class', 'filter list-group-item');
+      d3.select(this).attr('class', 'filter list-group-item active');
       //if (!self.filters[self.field]) self.filters[self.field] = {};
-      self.filters[self.field] = this.id;
+      if (self.filter == self.field +'/'+ this.id){
+        self.filter = null;
+      } else {
+        self.filter = self.field +'/'+ this.id;
+      }
       //self.reloadMap();
       self._updateLink();
     });
@@ -368,7 +385,6 @@ App.prototype._showFilters = function() {
 
 App.prototype.reloadMap = function(){
   if (this.state && this.county){
-  
   } else if (this.state && !this.county){
     this._totalCountByCountyByState(this.state);
   } else {
@@ -457,13 +473,11 @@ App.prototype._updateLink = function(){
     url += '/county/'+this.county;
   }
 
-  if ( Object.keys(this.filters).length ){
-    for (var f in this.filters){
-      url += '/field/' + f + '/' + this.filters[f];
-    }
+  if ( this.filter ) {
+    url += '/field/' + this.filter;
   }
 
-  console.log(url, this.filters);
+  console.log(url, this.filter);
   d3.select('#download')
     .attr('href', url)
     .text(url);

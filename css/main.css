@@ -149,7 +149,10 @@ body, html {
   font-size: 14px;
 }
 
-.filter {
+.filter.active {
+  background-color: #428bca;
+  color: #FFF;
+  border-color: #428bca;
 }
 
 .filter:hover {
